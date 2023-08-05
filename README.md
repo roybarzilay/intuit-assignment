@@ -11,9 +11,9 @@ Intuit assignment to to create player data retrieve MS
 
 2. Go to release directory and execute mvn build install
 
-3. go to target directory and execute: java -jar .\assignment-0.0.1-SNAPSHOT.jar
-
-4. Once the application is running you can use one of the APIs
+3. execute run.bat/run.sh
+   
+5. Once the application is running you can use one of the APIs
 
 ## APIs
 - GET player By player ID: curl --location 'http://localhost:9999/intuit/assignment/v1/api/players/zinsebi01'
