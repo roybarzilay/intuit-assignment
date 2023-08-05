@@ -1,11 +1,11 @@
 # intuit-assignment
 
 ## Overview
-The following repo contains examples for OpenFin's Java adapter.
+The following repo contains player data retrieve MS.
 using JAVA 17
 
 ## Guidelines
-assignment retrieve player data MS 
+Intuit assignment to to create player data retrieve MS 
 
 1. Clone this repository
 
@@ -13,12 +13,14 @@ assignment retrieve player data MS
 
 3. go to target directory and execute: java -jar .\assignment-0.0.1-SNAPSHOT.jar
 
-4. Once the application is running you can use one of the APIs:
-  - GET player By player ID: curl --location 'http://localhost:9999/intuit/assignment/v1/api/players/zinsebi01'
-  - GET player list by page and size: curl --location 'http://localhost:9999/intuit/assignment/v1/api/players?page=4&size=5'
+4. Once the application is running you can use one of the APIs
+
+## APIs
+- GET player By player ID: curl --location 'http://localhost:9999/intuit/assignment/v1/api/players/zinsebi01'
+- GET player list by page and size: curl --location 'http://localhost:9999/intuit/assignment/v1/api/players?page=4&size=5'
 
 ## More Info
-More information and API documentation can be found at https://openfin.co/java-api/
+TBD
 
 ## Support
 Please enter an issue in the repo for any questions or problems. 
