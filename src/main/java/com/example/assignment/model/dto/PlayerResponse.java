@@ -8,5 +8,4 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlayerResponse {
     private Player player;
-    private String error;
 }

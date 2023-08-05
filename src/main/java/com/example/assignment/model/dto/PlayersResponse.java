@@ -14,9 +14,4 @@ public class PlayersResponse {
     private Integer pageSize;
     private Integer totalPlayers;
     private Integer totalPages;
-    private String error;
-
-    public PlayersResponse(String error){
-        this.error = error;
-    }
 }

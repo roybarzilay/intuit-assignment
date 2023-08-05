@@ -3,6 +3,7 @@ package com.example.assignment.service.data.load.players;
 import com.example.assignment.model.Player;
 import com.example.assignment.model.dto.PlayersResponse;
 import com.example.assignment.service.data.load.BaseDataLoadService;
+import com.example.assignment.service.data.load.CacheService;
 import com.example.assignment.service.data.load.FileDataLoader;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,17 @@ public class PlayerService extends BaseDataLoadService {
     @Autowired
     private List<FileDataLoader> dataFileLoaders;
 
-    public PlayersResponse loadPlayersByPage(Integer page, Integer size, PlayerFieldsEnum sortBy) throws IOException {
-        List<Player> players = loadPlayers();
+    @Autowired
+    private CacheService<Player> cacheService;
 
+    public PlayersResponse loadPlayersByPage(Integer page, Integer size, PlayerFieldsEnum sortBy) throws IOException {
+        List<Player> players = getPlayers();
         sortBy(players, sortBy);
+
         if (page == null || size == null) {
-            return new PlayersResponse(players, size, page, players.size(), size !=  null ? players.size()/size : null, null);
+            return new PlayersResponse(players, size, page, players.size(), size !=  null ? players.size()/size : null);
         }
-        return new PlayersResponse(playersPerPage(players, page, size), page, size, players.size(), players.size()/size, null);
+        return new PlayersResponse(playersPerPage(players, page, size), page, size, players.size(), players.size()/size);
     }
 
     public List<Player> loadPlayers() throws IOException {
@@ -39,11 +43,17 @@ public class PlayerService extends BaseDataLoadService {
     }
 
     public Player loadPlayersById(String id) throws IOException {
-        Player player = null;
-        for (FileDataLoader loader : dataFileLoaders) {
-            player = (Player)loader.loadDataByIde(id);
+        Player playerById = cacheService.getById(id);
+        if (playerById != null) {
+            return playerById;
         }
-        return player;
+        for (FileDataLoader loader : dataFileLoaders) {
+            playerById = (Player)loader.loadDataByIde(id);
+            if (playerById != null) {
+                break;
+            }
+        }
+        return playerById;
     }
 
     private void overLimitValidation(int start, int size, int total) {
@@ -59,6 +69,16 @@ public class PlayerService extends BaseDataLoadService {
         return players.subList(start, end);
     }
 
+    private List<Player> getPlayers() throws IOException {
+        List<Player> players;
+        if (cacheService.getCacheSize() == 0) {
+            players = loadPlayers();
+            players.forEach(p -> cacheService.setCache(p.getPlayerID(), p));
+        } else {
+            players = new ArrayList<>(cacheService.getCache());
+        }
+        return players;
+    }
 
     private void sortBy(List<Player> players, PlayerFieldsEnum sortBy) {
         if (sortBy != null) {

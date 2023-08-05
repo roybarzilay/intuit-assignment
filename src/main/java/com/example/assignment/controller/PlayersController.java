@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
 
 @Log4j2
 @RestController
@@ -28,24 +31,25 @@ public class PlayersController extends BaseController{
       return ResponseEntity.ok(playerService.loadPlayersByPage(page, size, sortBy));
     } catch (Exception ex){
       log.error(ex.getMessage(), ex);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PlayersResponse(ex.getMessage()));
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
     }
   }
 
   @GetMapping(value = "/api/players/{playerID}")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseEntity<PlayerResponse> getPlayerById(@PathVariable String playerID) {
+  public ResponseEntity<PlayerResponse> getPlayerById(@PathVariable String playerID) throws IOException {
     log.info("Get player by playerID {}", playerID);
     try {
       var player = playerService.loadPlayersById(playerID);
       if (player == null) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new PlayerResponse(null, "User id " + playerID + " not " +
-                "exists, please request valid ID"));
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id " + playerID + " not " + "exists, please request valid ID");
       }
-      return ResponseEntity.ok(new PlayerResponse(player, null));
+      return ResponseEntity.ok(new PlayerResponse(player));
+    } catch (ResponseStatusException ex) {
+      throw ex;
     } catch (Exception ex){
       log.error(ex.getMessage(), ex);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PlayerResponse(null, ex.getMessage()));
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), ex);
     }
   }
 
